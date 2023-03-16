@@ -5,93 +5,60 @@ import { percentageDistribution } from './percentageDistribution'
 // Allow comparing numbers in deep data structures with flexible precision
 expect.extend({toBeDeepCloseTo, toMatchCloseTo})
 
+const fractionStringToNumber = eval
+
 describe('percentageDistribution', () => {
   describe('uniform distribution', () => {
     ;[
       {
         args: [
-          [
-            1/2,
-            1/2,
-          ],
+          ['1/2', '1/2'],
           0,
-          1/4,
+          '1/4',
         ],
-        expected: [
-          1/4,
-          3/4,
-        ]
+        expected: ['1/4', '3/4']
       },
       {
         args: [
-          [
-            1/2,
-            1/2,
-          ],
+          ['1/2', '1/2'],
           0,
-          1/7,
+          '1/7',
         ],
-        expected: [
-          1/7,
-          6/7,
-        ]
+        expected: ['1/7', '6/7']
       },
       {
         args: [
-          [
-            1/3,
-            1/3,
-            1/3,
-          ],
+          ['1/3', '1/3', '1/3'],
           0,
-          1/2,
+          '1/2',
         ],
-        expected: [
-          1/2,
-          1/2/2,
-          1/2/2,
-        ]
+        expected: ['1/2', '1/2/2', '1/2/2']
       },
       {
         args: [
-          [
-            1/4,
-            1/4,
-            1/4,
-            1/4,
-          ],
+          ['1/4', '1/4', '1/4', '1/4'],
           0,
-          1/2,
+          '1/2',
         ],
-        expected: [
-          1/2,
-          1/2/3,
-          1/2/3,
-          1/2/3,
-        ],
+        expected: ['1/2', '1/2/3', '1/2/3', '1/2/3'],
       },
       {
         args: [
-          [
-            1/4,
-            1/4,
-            1/4,
-            1/4,
-          ],
+          ['1/4', '1/4', '1/4', '1/4'],
           2,
-          1/2,
+          '1/2',
         ],
-        expected: [
-          1/2/3,
-          1/2/3,
-          1/2,
-          1/2/3,
-        ],
+        expected: ['1/2/3', '1/2/3', '1/2', '1/2/3'],
       },
-    ].forEach(({args, expected}) => {
-      // test(`${args[0].length} choices`, () => {
-      test(`percentageDistribution(${JSON.stringify(args)})`, () => {
-        expect(percentageDistribution(...args)).toBeDeepCloseTo(expected, 10)
+    ].forEach(({args: [values, index, newValue], expected}) => {
+      test(`percentageDistribution([${values.join(', ')}], ${index}, ${newValue})`, () => {
+        const result = percentageDistribution(
+          values.map(fractionStringToNumber),
+          index,
+          fractionStringToNumber(newValue),
+        )
+
+        expect(result).toBeDeepCloseTo(expected.map(fractionStringToNumber), 10)
       })
     })
   })
@@ -100,11 +67,11 @@ describe('percentageDistribution', () => {
     // TODO: Can this test be generalized?
     test('foo', () => {
       const values = [
-        1/2,
-        1/4,
-        1/8,
-        1/8,
-      ]
+        '1/2',
+        '1/4',
+        '1/8',
+        '1/8',
+      ].map(fractionStringToNumber)
       const result = percentageDistribution(
         values,
         2,
